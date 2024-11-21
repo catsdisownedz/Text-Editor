@@ -1,0 +1,92 @@
+#General Statements
+GeneralStatement: Statement Terminal
+
+Statement:
+    Declaration
+    | ArithmeticExpression
+    | Loop
+    | Condition
+
+
+#Declaration
+Declaration: 
+    Type Variable 
+    | Type Variable '=' Term 
+    | Type Variable '=' ArithmeticExpression
+
+
+#Types
+Type: 
+'int'
+| 'string'
+| 'array'
+
+
+#Variable
+Variable: 
+    [a-zA-Z_][a-zA-Z_0-9]*
+
+
+#Loops
+Loop:
+    WhileLoop
+    | ForLoop
+
+WhileLoop:
+    'while' '(' Condition ')' LoopBody
+
+ForLoop:
+ 'for' '(' ForStatement ')' LoopBody
+
+ ForStatement:
+    Declaration? Terminal Condition? Terminal ArithmeticExpression?
+
+LoopBody:
+    '{' GeneralStatement* '}'
+
+
+Condition:
+    Term ConditionalOperator Term
+
+#ConditionalOperators
+ConditionalOperator:
+    '<'
+    | '>'
+    | '>='
+    | '<='
+    | '=='
+    | '!='
+
+
+
+
+#Arithmetic Expression
+ArithmeticExpression: 
+    Term Operator Term 
+    | Term Operator ArithmeticExpression 
+    | ε
+
+
+#Arithmetic Operators
+Operator:
+    AdditiveOperator
+    | MultiplicativeOperator
+
+AdditiveOperator:
+    '+'
+    | '-'
+
+MultiplicativeOperator:
+    '*'
+    | '/'
+    | '%'
+
+
+
+#ArithmeticTerm
+Term: 
+    Variable 
+    | [0-9]+
+
+#Terminals
+Terminal: ';'
