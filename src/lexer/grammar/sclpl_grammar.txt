@@ -1,0 +1,138 @@
+#General Statements
+GeneralStatement: Statement Terminal
+
+Statement:
+    Declaration
+    | ArithmeticExpression
+    | Loop
+    | Condition
+    | Assignment
+    | FlowControlStatement
+    | IncrementStatement
+
+
+#Declaration
+Declaration: 
+    Type Variable 
+    | Type Variable '=' Term 
+    | Type Variable '=' ArithmeticExpression
+    | Type Variable '[' [0-9]+ ']'
+    
+
+#Assignment
+Assignment:
+    Variable '=' Term
+    | Variable '=' ArithmeticExpression
+    | Variable '=' Variable
+    | Variable SimpleAssignmentOperator
+    | Variable CompoundAssignmentOperator Term
+    | ArrayAccess '=' Term
+    | ArrayAccess '=' ArithmeticExpression
+    | ArrayAccess SimpleAssignmentOperator
+    | ArrayAccess CompoundAssignmentOperator Term
+    | ArrayAccess CompoundAssignmentOperator ArithmeticExpression
+
+
+#Types
+Type: 
+'int'
+| 'char'
+| 'string'
+| 'array'
+
+
+#Variable
+Variable: 
+    [a-zA-Z_][a-zA-Z_0-9]*
+
+
+#Loops
+Loop:
+    WhileLoop
+    | ForLoop
+
+WhileLoop:
+    'while' '(' Condition ')' LoopBody
+
+ForLoop:
+ 'for' '(' ForStatement ')' LoopBody
+
+ ForStatement:
+    Declaration? Terminal Condition? Terminal Assignment?
+
+LoopBody:
+    '{' GeneralStatement* '}'
+
+FlowControlStatement:
+    ConditionalStatement Statement
+    | ConditionalStatement '{' Statement* '}'
+
+ConditionalStatement:
+    'if' '(' Condition ')'
+
+Condition:
+     Term ConditionalOperator Term
+
+#ConditionalOperators
+ConditionalOperator:
+    '<'
+    | '>'
+    | '>='
+    | '<='
+    | '=='
+    | '!='
+
+
+#Arithmetic Expression
+ArithmeticExpression: 
+    Term Operator Term 
+    | Term Operator ArithmeticExpression 
+    | ε
+
+
+
+#Arithmetic Operators
+Operator:
+    AdditiveOperator
+    | MultiplicativeOperator
+
+AdditiveOperator:
+    '+'
+    | '-'
+
+MultiplicativeOperator:
+    '*'
+    | '/'
+    | '%'
+
+
+
+// ** means ^2 and // means sqrt()
+// our language our rules 
+// it was 2 am sorry
+SimpleAssignmentOperator:
+    '++'
+    '--'
+    '**'
+    '//'
+
+CompoundAssignmentOperator:
+    '+='
+    | '-='
+    | '*='
+    | '/='
+    | '%='
+
+#ArithmeticTerm
+Term: 
+    Variable 
+    | [0-9]+
+    | [a-zA-Z]+
+    | ArrayAccess
+
+#ArrayAccess
+    Variable '[' Term ']'
+
+
+#Terminals
+Terminal: ';'
