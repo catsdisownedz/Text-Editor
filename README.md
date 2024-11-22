@@ -62,3 +62,4 @@ Run the Editor:
 Explore SCLPL:
 
 Open a new file, write some SCLPL code, and see it get parsed in real-time.
+>>>>>>> 06f517eec8d1705580c3571385009c2ee7d81178
