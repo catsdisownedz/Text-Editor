@@ -37,7 +37,7 @@ Assignment:
 Type: 
 'int'
 | 'char'
-| 'string'
+| 'string' // BAYZA
 | 'array'
 
 
@@ -127,7 +127,7 @@ CompoundAssignmentOperator:
 Term: 
     Variable 
     | [0-9]+
-    | [a-zA-Z]+
+    | [a-zA-Z]+ //BAYZA
     | ArrayAccess
 
 #ArrayAccess
