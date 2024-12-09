@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import simpledialog
 from themes import DARK_THEME
 from status_bar import StatusBar
-
 class TabManager:
     def __init__(self, root, status_bar):
         self.root = root
@@ -14,9 +13,10 @@ class TabManager:
         self.tabs = {}  # Dictionary to store tabs and their Text widgets
         self.file_paths = {}
         self.add_tab("Untitled")
-        self.notebook.bind("<Button-1>", self.rename_tab)
-        
-        
+
+        # Bind <Double-1> for renaming tabs
+        self.notebook.bind("<Double-1>", self.rename_tab)
+
     def add_tab(self, title="Untitled", content=None, file_path=None):
         # Create a new frame for the tab
         frame = tk.Frame(self.notebook, bg=DARK_THEME["editor_background"])
@@ -24,7 +24,7 @@ class TabManager:
 
         # Add a Text widget to the frame
         text_widget = tk.Text(frame, wrap="word", bg=DARK_THEME["editor_background"], fg=DARK_THEME["foreground"],
-                            insertbackground=DARK_THEME["cursor_color"], undo=True)
+                              insertbackground=DARK_THEME["cursor_color"], undo=True)
         text_widget.pack(expand=True, fill="both", padx=5, pady=5)
 
         # If content is provided, insert it into the Text widget
@@ -38,7 +38,6 @@ class TabManager:
         self.tabs[title] = text_widget
         self.file_paths[title] = file_path
 
-
     def new_file(self):
         self.add_tab(f"Untitled {len(self.tabs) + 1}")
 
@@ -49,9 +48,7 @@ class TabManager:
             del self.tabs[tab_name]
             del self.file_paths[tab_name]
             self.notebook.forget(current_tab)
-            
-            
-            
+
     def rename_tab(self, event):
         # Detect the tab clicked
         clicked_tab = self.notebook.index("@{},{}".format(event.x, event.y))
@@ -81,7 +78,6 @@ class TabManager:
 
         # Update the file path in the dictionary
         self.file_paths[tab_name] = file_name
-
 
     def focused_text_widget_event(self, event_type):
         # Get the currently focused Text widget

@@ -23,16 +23,18 @@ class CustomStyle:
                              background=DARK_THEME["editor_background"],
                              foreground=DARK_THEME["foreground"],
                              borderwidth=1,
-                             relief='flat')
+                             relief='flat',
+                             highlightcolor= DARK_THEME["hover_button_1"] )
         self.style.map('TButton',
                        background=[('active', DARK_THEME["hover_button_1"])],  # Pastel pink on hover
-                       relief=[('pressed', 'sunken'), ('!pressed', 'flat')])
+                       relief=[('pressed', DARK_THEME["hover_button_1"])])
 
         # Customize Notebook (Tabs)
         self.style.configure('TNotebook',
                              background=DARK_THEME["background"],
                              borderwidth=1,  # Faint gray border
-                             relief="solid")
+                             relief="flat")
+        
         self.style.configure('TNotebook.Tab',
                              background=DARK_THEME["editor_background"],
                              foreground=DARK_THEME["foreground"],
@@ -40,16 +42,16 @@ class CustomStyle:
                              borderwidth=1,
                              relief="flat")
         self.style.map('TNotebook.Tab',
-                       background=[('selected', DARK_THEME["background"]), ('!selected', DARK_THEME["editor_background"])],
-                       foreground=[('selected', DARK_THEME["foreground"]), ('!selected', DARK_THEME["foreground"])],
-                       bordercolor=[('selected', '#555555'), ('!selected', '#555555')],  # Faint gray border for tabs
-                       relief=[('hover', 'raised')])
-
+                       background=[('selected', DARK_THEME["editor_background"])],  # Same background for selected tab
+                       foreground=[('selected', DARK_THEME["foreground"])],  # Text color for selected tab
+                       bordercolor=[('selected', DARK_THEME["hover_button_4"])]  # Thin orange border for selected tab
+                      ) 
         # Customize the border around the text widget
         self.style.configure('TextFrame.TFrame',
                              background=DARK_THEME["background"],
-                             borderwidth=1,  # Thin gray border
-                             relief="solid")
+                             borderwidth=1,# Thin gray border
+                             bordercolor="#555555",
+                             relief="flat")
         
         # Customize menus
         self.style.configure('TMenu',

@@ -1,6 +1,5 @@
 import sys
 import tkinter as tk
-from tkinter import Tk
 from tkinter import ttk
 from tab_manager import TabManager
 from save_manager import SaveManager
@@ -14,16 +13,12 @@ class TextEditor:
         self.root.title("SCLPL")
         self.root.geometry("800x600")
         self.root.configure(bg=DARK_THEME["background"])
-
         
         self.style = CustomStyle(self.root)
         self.status_bar = StatusBar(self.root)
         self.tab_manager = TabManager(self.root, self.status_bar)
         self.save_manager = SaveManager(self.tab_manager)
         
-
-       
-    
         self.create_menu_bar()
 
     def create_menu_bar(self):
@@ -52,7 +47,6 @@ class TextEditor:
         
     def update_status(self):
         self.tab_manager.update_status()
-
 
 
     def run(self):
