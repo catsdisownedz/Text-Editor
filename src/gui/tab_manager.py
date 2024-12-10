@@ -56,9 +56,9 @@ class TabManager:
             self.add_play_button(frame)
         else:
             self.remove_play_button(frame)
-        lines = content.count("\n") + 1
+       # lines = content.count("\n") + 1
         self.language = "SCLPL" if is_sclpl else "Text"
-        self.status_bar.update_status(lines, self.language)
+       # self.status_bar.update_status(lines, self.language)
         
 
     def detect_language(self, content):
@@ -199,6 +199,9 @@ class TabManager:
             if text_widget:
                 # Calculate the number of lines
                 lines = int(text_widget.index('end-1c').split('.')[0])
+                content = text_widget.get("1.0", "end-1c")
+                frame = text_widget.master
+                self.detect_language_and_update_ui(frame, text_widget)
                 
                 if not self.language:
                     self.language = "Text"
