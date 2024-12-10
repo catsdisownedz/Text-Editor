@@ -44,6 +44,9 @@ class Parser:
             raise SyntaxError(f"Expected {token_type}, but got {token[0] if token else 'EOF'}")
 
     def parse(self):
+        #hi hello
+        #this funcction is used for as a placeholder for the run button in the gui, if you remove it probs something will crash 
+        #oki bayie 
         return self.general_statement()
 
     def general_statement(self):

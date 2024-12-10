@@ -49,7 +49,7 @@ class CustomStyle:
         # Customize the border around the text widget
         self.style.configure('TextFrame.TFrame',
                              background=DARK_THEME["background"],
-                             borderwidth=1,# Thin gray border
+                             borderwidth=0.5,# Thin gray border
                              bordercolor="#555555",
                              relief="flat")
         

@@ -7,6 +7,7 @@ from status_bar import StatusBar
 from themes import DARK_THEME
 from custom_style import CustomStyle
 
+
 class TextEditor:
     def __init__(self, root):
         self.root = root
@@ -18,9 +19,8 @@ class TextEditor:
         self.status_bar = StatusBar(self.root)
         self.tab_manager = TabManager(self.root, self.status_bar)
         self.save_manager = SaveManager(self.tab_manager)
-        
         self.create_menu_bar()
-
+        
     def create_menu_bar(self):
         menu_bar = tk.Menu(self.root)
 
@@ -44,6 +44,8 @@ class TextEditor:
 
         # Attach Menu Bar
         self.root.config(menu=menu_bar)
+        
+        
         
     def update_status(self):
         self.tab_manager.update_status()
