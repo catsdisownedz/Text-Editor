@@ -1,3 +1,5 @@
+#the working version of the code
+
 import json
 from sclpl_lexer import lexer
 
@@ -13,7 +15,7 @@ class Parser:
     def eat(self, token_type):
         token = self.current_token()
         if token and token[0] == token_type:
-            print(f"Eating token: {token}")  # Debugging print
+            #print(f"Eating token: {token}")  # Debugging print
             self.pos += 1
             return token
         else:
