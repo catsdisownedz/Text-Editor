@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
-import time
 import os
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -10,6 +9,7 @@ sys.path.append(parent_dir)
 from themes import DARK_THEME
 from status_bar import StatusBar
 from sclpl_parser import parserpar, abstract_syntax_tree
+from syntax_highlighter import SyntaxHighlighter
 
 class TabManager:
     def __init__(self, root, status_bar):
@@ -20,10 +20,22 @@ class TabManager:
         self.language = "Text"
         self.tabs = {}  # Dictionary to store tabs and their Text widgets
         self.file_paths = {}
+                
+        self.bracket_pairs = {
+            '(': ')',
+            '{': '}',
+            '[': ']',
+            '<': '>',
+            '"': '"',
+            "'": "'"
+        }
+                
+        
         self.add_tab("Untitled")
 
         # Bind <Double-1> for renaming tabs
         self.notebook.bind("<Double-1>", self.rename_tab)
+
 
     def add_tab(self, title="Untitled", content=None, file_path=None):
         # Create a new frame for the tab
@@ -38,14 +50,23 @@ class TabManager:
         # If content is provided, insert it into the Text widget
         if content:
             text_widget.insert("1.0", content)
+            
         
         text_widget.bind("<KeyRelease>", lambda e: self.update_status())
         
+        text_widget.bind("<KeyPress>", self.handle_bracket)
         
         # Add the frame to the notebook
         self.notebook.add(frame, text=title)
         self.tabs[title] = text_widget
         self.file_paths[title] = file_path
+
+        frame.toolbar_frame = tk.Frame(frame, bg=DARK_THEME["editor_background"])
+        frame.toolbar_frame.pack(side='top', fill='x')
+        
+        if not hasattr(self, 'syntax_highlighters'):
+            self.syntax_highlighters = {}
+        self.syntax_highlighters[title] = SyntaxHighlighter(text_widget)
 
 
     def detect_language_and_update_ui(self, frame, text_widget):
@@ -56,9 +77,9 @@ class TabManager:
             self.add_play_button(frame)
         else:
             self.remove_play_button(frame)
-       # lines = content.count("\n") + 1
+        lines = content.count("\n") + 1
         self.language = "SCLPL" if is_sclpl else "Text"
-       # self.status_bar.update_status(lines, self.language)
+        self.status_bar.update_status(lines, self.language)
         
 
     def detect_language(self, content):
@@ -68,27 +89,12 @@ class TabManager:
         return any(keyword in content for keyword in sclpl_keywords)
     
     def add_play_button(self, frame):
-        """
-        Adds a play button to the frame with a fade-in effect.
-        """
         if not hasattr(frame, "play_button"):
-            play_button = ttk.Button(frame, text="▶ Run", command=self.parser_callback,
-                                     bg=DARK_THEME.get("button_bg", "#default_bg"),
-                                     fg=DARK_THEME.get("button_fg", "#default_fg"))
-            play_button.place(relx=0.9, rely=0.02)
-
-            # Fade-in effect
-            for opacity in range(0, 100, 5):
-                self.root.attributes("-alpha", opacity / 100)
-                self.root.update()
-                time.sleep(0.01)
-
+            play_button = ttk.Button(frame, text="▶ Run", command=self.parser_callback)
+            play_button.pack(side='right', padx=5, pady=5)
             frame.play_button = play_button
             
     def remove_play_button(self, frame):
-        """
-        Removes the play button if it exists.
-        """
         if hasattr(frame, "play_button"):
             frame.play_button.destroy()
             del frame.play_button
@@ -125,6 +131,7 @@ class TabManager:
             tab_name = self.notebook.tab(current_tab, "text")
             del self.tabs[tab_name]
             del self.file_paths[tab_name]
+            del self.syntax_highlighters[tab_name]
             self.notebook.forget(current_tab)
 
     def rename_tab(self, event):
@@ -141,6 +148,7 @@ class TabManager:
                 self.tabs[new_name] = self.tabs.pop(tab_name)
                 self.file_paths[new_name] = self.file_paths.pop(tab_name)
 
+                self.syntax_highlighters[new_name] = self.syntax_highlighters.pop(tab_name)
                 # Automatically save with the new name
                 self.auto_save(new_name)
 
@@ -178,9 +186,6 @@ class TabManager:
 
 
     def add_uneditable_tab(self,title,content):
-        """
-        Adds a new uneditable tab, useful for displaying AST.
-        """
         frame = tk.Frame(self.notebook, bg=DARK_THEME["editor_background"])
         frame.pack(expand=True, fill="both")
 
@@ -199,10 +204,31 @@ class TabManager:
             if text_widget:
                 # Calculate the number of lines
                 lines = int(text_widget.index('end-1c').split('.')[0])
-                content = text_widget.get("1.0", "end-1c")
                 frame = text_widget.master
                 self.detect_language_and_update_ui(frame, text_widget)
+                
+                self.syntax_highlighters[tab_name].highlight()
                 
                 if not self.language:
                     self.language = "Text"
                 self.status_bar.update_status(lines, self.language)
+                
+    def handle_bracket(self, event):
+        current_tab = self.notebook.select()
+        if current_tab:
+            tab_name = self.notebook.tab(current_tab, "text")
+            text_widget = self.tabs.get(tab_name)
+
+            # Check if this is an opening bracket and we're in SCLPL mode
+            if text_widget and self.language == "SCLPL":
+                opening_bracket = event.char
+                if opening_bracket in self.bracket_pairs:
+                    closing_bracket = self.bracket_pairs[opening_bracket]
+                    # Insert the pair
+                    text_widget.insert("insert", opening_bracket + closing_bracket)
+                    # Move cursor between them
+                    text_widget.mark_set("insert", "insert-1c")
+
+                    # Prevent default insertion of the character again
+                    return "break"
+        return None
