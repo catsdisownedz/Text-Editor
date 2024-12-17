@@ -12,12 +12,11 @@ class sclplParser:
 
     def eat(self, token_type):
         token = self.current_token()
-        if token and token[0] == token_type:
-            #print(f"Eating token: {token}")  # Debugging print
-            self.pos += 1
-            return token
-        else:
+        if not token or token[0] != token_type:
             raise SyntaxError(f"Expected {token_type}, but got {token[0] if token else 'EOF'}")
+        #print(f"Eating token: {token}")  # Debugging print
+        self.pos += 1
+        return token
 
     def parse(self):
         statements = []
@@ -67,22 +66,25 @@ class sclplParser:
         # Start parsing a while loop
         self.eat('KEYWORDS')  # Eat 'while'
         self.eat('BRACE_OR_PAREN')  # Eat '('
-        
+
         # Parse the condition: left operand, operator, and right operand
         condition_left = self.term()  # Left side of the condition (e.g., 'x')
         operator = self.eat('CONDITIONAL_OPERATOR')  # The conditional operator (e.g., '<=')
         condition_right = self.term()  # Right side of the condition (e.g., 'y')
-        
+
         self.eat('BRACE_OR_PAREN')  # Eat ')'
         self.eat('BRACE_OR_PAREN')  # Eat '{' (start of body)
-        
+
         # Parse the body of the loop
         body = []
-        while self.current_token() and not (self.current_token()[0] == 'BRACE_OR_PAREN' and self.current_token()[1] == '}'):
+        while self.current_token() and (
+            self.current_token()[0] != 'BRACE_OR_PAREN'
+            or self.current_token()[1] != '}'
+        ):
             body.append(self.general_statement())
-        
+
         self.eat('BRACE_OR_PAREN')  # Eat '}' (end of body)
-        
+
         return {
             'type': 'while',
             'condition': {

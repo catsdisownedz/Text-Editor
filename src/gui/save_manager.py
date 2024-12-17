@@ -17,8 +17,7 @@ class SaveManager:
         self.tab_manager.add_tab(title=file_name, content=content, file_path=file_path)
 
     def save_file(self):
-        current_tab = self.tab_manager.notebook.select()
-        if current_tab:
+        if current_tab := self.tab_manager.notebook.select():
             widget_index = self.tab_manager.notebook.index(current_tab)
             widget_name = self.tab_manager.notebook.tab(widget_index, "text")
             if widget_name == "Untitled":
@@ -27,14 +26,14 @@ class SaveManager:
                 self._write_to_file(widget_name)
 
     def save_file_as(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".txt",
-                                                 filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
-        if file_path:
+        if file_path := filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")],
+        ):
             self._write_to_file(file_path)
 
     def _write_to_file(self, file_path):
-        text_widget = self.tab_manager.get_text_widget()
-        if text_widget:
+        if text_widget := self.tab_manager.get_text_widget():
             content = text_widget.get(1.0, tk.END)
             with open(file_path, "w") as file:
                 file.write(content)

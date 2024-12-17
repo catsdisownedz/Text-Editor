@@ -102,12 +102,9 @@ class TabManager:
 
     
     def parser_callback(self):
-        current_tab = self.notebook.select()
-        if current_tab:
+        if current_tab := self.notebook.select():
             tab_name = self.notebook.tab(current_tab, "text")
-            text_widget = self.tabs.get(tab_name)
-
-            if text_widget:
+            if text_widget := self.tabs.get(tab_name):
                 content = text_widget.get("1.0", "end-1c")
 
                 # 1. Parse the content using the Parser class
@@ -120,7 +117,7 @@ class TabManager:
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"
                 self.add_uneditable_tab(new_tab_title, ast_representation)
-                
+
         print("works")
         #placeholderrr
 
@@ -128,8 +125,7 @@ class TabManager:
         self.add_tab(f"Untitled {len(self.tabs) + 1}")
 
     def close_tab(self):
-        current_tab = self.notebook.select()
-        if current_tab:
+        if current_tab := self.notebook.select():
             tab_name = self.notebook.tab(current_tab, "text")
             del self.tabs[tab_name]
             del self.file_paths[tab_name]
@@ -138,11 +134,12 @@ class TabManager:
 
     def rename_tab(self, event):
         # Detect the tab clicked
-        clicked_tab = self.notebook.index("@{},{}".format(event.x, event.y))
+        clicked_tab = self.notebook.index(f"@{event.x},{event.y}")
         if clicked_tab >= 0:
             tab_name = self.notebook.tab(clicked_tab, "text")
-            new_name = simpledialog.askstring("Rename Tab", f"Enter new name for tab '{tab_name}':")
-            if new_name:
+            if new_name := simpledialog.askstring(
+                "Rename Tab", f"Enter new name for tab '{tab_name}':"
+            ):
                 # Update tab name
                 self.notebook.tab(clicked_tab, text=new_name)
 
@@ -170,8 +167,9 @@ class TabManager:
     def focused_text_widget_event(self, event_type):
         # Get the currently focused Text widget
         current_tab = self.notebook.select()
-        current_text_widget = self.tabs.get(self.notebook.tab(current_tab, "text"))
-        if current_text_widget:
+        if current_text_widget := self.tabs.get(
+            self.notebook.tab(current_tab, "text")
+        ):
             if event_type == "cut":
                 current_text_widget.event_generate("<<Cut>>")
             elif event_type == "copy":
@@ -180,8 +178,7 @@ class TabManager:
                 current_text_widget.event_generate("<<Paste>>")
 
     def get_text_widget(self):
-        current_tab = self.notebook.select()
-        if current_tab:
+        if current_tab := self.notebook.select():
             tab_name = self.notebook.tab(current_tab, "text")
             return self.tabs.get(tab_name)
         return None
@@ -216,8 +213,7 @@ class TabManager:
                 self.status_bar.update_status(lines, self.language)
                 
     def handle_bracket(self, event):
-        current_tab = self.notebook.select()
-        if current_tab:
+        if current_tab := self.notebook.select():
             tab_name = self.notebook.tab(current_tab, "text")
             text_widget = self.tabs.get(tab_name)
 

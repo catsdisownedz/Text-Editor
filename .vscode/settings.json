@@ -38,10 +38,7 @@
   "C_Cpp_Runner.compilerArgs": [],
   "C_Cpp_Runner.linkerArgs": [],
   "C_Cpp_Runner.includePaths": [],
-  "C_Cpp_Runner.includeSearch": [
-    "*",
-    "**/*"
-  ],
+  "C_Cpp_Runner.includeSearch": ["*", "**/*"],
   "C_Cpp_Runner.excludeSearch": [
     "**/build",
     "**/build/**",
@@ -56,5 +53,18 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "python.pythonPath": "C:\\Program Files\\Python313\\python.exe"
+  "python.pythonPath": "C:\\Program Files\\Python313\\python.exe",
+  "workbench.colorTheme": "Bearded Theme Aquarelle Lilac",
+  "cSpell.words": [
+    "BAYZA",
+    "hiiiiiiiiiiiii",
+    "insertbackground",
+    "langauge",
+    "lastgroup",
+    "padx",
+    "pady",
+    "placeholderrr",
+    "SCLPL",
+    "tearoff"
+  ]
 }
