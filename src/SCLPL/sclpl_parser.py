@@ -1,6 +1,6 @@
 import json
-from sclpl_lexer import sclplLexer
-from abstract_syntax_tree import AST
+from SCLPL.sclpl_lexer import sclplLexer
+from SCLPL.abstract_syntax_tree import AST
 
 class sclplParser:
     def __init__(self, tokens):

@@ -3,12 +3,13 @@ from tkinter import ttk
 from tkinter import simpledialog
 import os
 import sys
+import json
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(parent_dir)
 from themes import DARK_THEME
 from status_bar import StatusBar
-from SCLPL.abstract_syntax_tree import draw_ast
+from SCLPL.abstract_syntax_tree import AST
 from SCLPL.sclpl_parser import sclplParser
 from syntax_highlighter import SyntaxHighlighter
 
@@ -102,22 +103,28 @@ class TabManager:
 
     
     def parser_callback(self):
+        print("function called!")
         if current_tab := self.notebook.select():
+            print("first if condition!")
             tab_name = self.notebook.tab(current_tab, "text")
+            print(f"tab dict: {self.tabs}")
+            print(f"tab name: {self.tabs.get(tab_name)}")
+            print(f"text widget name: {text_widget}")
             if text_widget := self.tabs.get(tab_name):
+                print("second if condition!")
                 content = text_widget.get("1.0", "end-1c")
 
                 # 1. Parse the content using the Parser class
                 parser = sclplParser(tokens)
                 tokens = parser.parse()  # Assuming `Parser.parse()` returns tokens or an AST
-
+                print(json.dumps(tokens, indent=4))
                 # 2. Generate AST (ASCII tree) using the abstract_syntax_tree module
-                ast_representation = draw_ast(tokens)  # `draw_ast` returns the ASCII representation of the AST
+                ast = AST(tokens)
+                ast_representation = ast.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
 
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"
                 self.add_uneditable_tab(new_tab_title, ast_representation)
-
         print("works")
         #placeholderrr
 
@@ -150,6 +157,7 @@ class TabManager:
                 self.syntax_highlighters[new_name] = self.syntax_highlighters.pop(tab_name)
                 # Automatically save with the new name
                 self.auto_save(new_name)
+                print(f"New tab name {self.tabs}")
 
     def auto_save(self, tab_name):
         # Save the content of the tab to a file with the new name

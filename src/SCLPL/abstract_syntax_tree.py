@@ -30,7 +30,7 @@ class AST:
             elif isinstance(node, list):
                 for index, item in enumerate(node):
                     item_id = f"{node_id}_{index}"
-                    dot.node(item_id, f"List item {index}")
+                    dot.node(item_id, f"Statement {index}")
                     
                     if parent_id is not None:
                         dot.edge(parent_id, item_id)
