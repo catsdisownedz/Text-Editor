@@ -57,6 +57,7 @@
   "workbench.colorTheme": "Bearded Theme Aquarelle Lilac",
   "cSpell.words": [
     "BAYZA",
+    "graphviz",
     "hiiiiiiiiiiiii",
     "insertbackground",
     "langauge",
@@ -65,6 +66,8 @@
     "pady",
     "placeholderrr",
     "SCLPL",
-    "tearoff"
+    "tearoff",
+    "tkinter",
+    "ttkthemes"
   ]
 }

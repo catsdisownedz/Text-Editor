@@ -1,6 +1,6 @@
 import json
-from SCLPL.sclpl_lexer import sclplLexer
-
+from sclpl_lexer import sclplLexer
+from abstract_syntax_tree import AST
 
 class sclplParser:
     def __init__(self, tokens):
@@ -117,6 +117,7 @@ class sclplParser:
         value = self.expression()  # Handle assignment value
         self.eat('TERMINAL')
         return {
+            'type': 'assignment',
             'assignment': var_token[1],
             'value': value
         }
@@ -174,3 +175,7 @@ if __name__ == '__main__':
 
     # Pretty-print the AST
     print(json.dumps(ast, indent=4))
+
+    # Draw the AST and save it to a file
+    visualizer = AST(ast)
+    visualizer.draw_ast('ast')

@@ -1,3 +1,4 @@
 tkinter 
 Pillow
 ttkthemes
+graphviz
