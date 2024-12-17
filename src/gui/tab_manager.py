@@ -104,13 +104,18 @@ class TabManager:
     
     def parser_callback(self):
         print("function called!")
+        
         if current_tab := self.notebook.select():
             print("first if condition!")
             tab_name = self.notebook.tab(current_tab, "text")
             print(f"tab dict: {self.tabs}")
-            print(f"tab name: {self.tabs.get(tab_name)}")
+            print(f"tab name: {tab_name}")
+
+            # Ensure the text widget is retrieved outside the condition
+            text_widget = self.tabs.get(tab_name)
             print(f"text widget name: {text_widget}")
-            if text_widget := self.tabs.get(tab_name):
+
+            if text_widget:
                 print("second if condition!")
                 content = text_widget.get("1.0", "end-1c")
 
@@ -118,6 +123,7 @@ class TabManager:
                 parser = sclplParser(tokens)
                 tokens = parser.parse()  # Assuming `Parser.parse()` returns tokens or an AST
                 print(json.dumps(tokens, indent=4))
+
                 # 2. Generate AST (ASCII tree) using the abstract_syntax_tree module
                 ast = AST(tokens)
                 ast_representation = ast.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
@@ -125,8 +131,9 @@ class TabManager:
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"
                 self.add_uneditable_tab(new_tab_title, ast_representation)
+
         print("works")
-        #placeholderrr
+
 
     def new_file(self):
         self.add_tab(f"Untitled {len(self.tabs) + 1}")
