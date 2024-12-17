@@ -8,7 +8,8 @@ parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(parent_dir)
 from themes import DARK_THEME
 from status_bar import StatusBar
-from sclpl_parser import parserpar, abstract_syntax_tree
+from SCLPL.abstract_syntax_tree import draw_ast
+from SCLPL.sclpl_parser import sclplParser
 from syntax_highlighter import SyntaxHighlighter
 
 class TabManager:
@@ -84,7 +85,7 @@ class TabManager:
 
     def detect_language(self, content):
         #this is just a placeholder for the actual langauge recognition lol 
-        #it will call the actual function from sclpl_parser/language_recognition.py       
+        #it will call the actual function from sclpl_parser/language_recognition.py  ////////////////      
         sclpl_keywords = ["int", "while", "for", "array"]
         return any(keyword in content for keyword in sclpl_keywords)
     
@@ -110,10 +111,11 @@ class TabManager:
                 content = text_widget.get("1.0", "end-1c")
 
                 # 1. Parse the content using the Parser class
-                tokens = parserpar(content).parse()  # Assuming `Parser.parse()` returns tokens or an AST
+                parser = sclplParser(tokens)
+                tokens = parser.parse()  # Assuming `Parser.parse()` returns tokens or an AST
 
                 # 2. Generate AST (ASCII tree) using the abstract_syntax_tree module
-                ast_representation = abstract_syntax_tree.draw_ast(tokens)  # `draw_ast` returns the ASCII representation of the AST
+                ast_representation = draw_ast(tokens)  # `draw_ast` returns the ASCII representation of the AST
 
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"
