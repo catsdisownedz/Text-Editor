@@ -134,7 +134,7 @@ class TabManager:
 
                 # 2. Generate AST (ASCII tree) using the abstract_syntax_tree module
                 visualizer = AST(ast)
-                image_path = ast.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
+                image_path = visualizer.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
 
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"

@@ -58,6 +58,7 @@ class sclplParser:
                 return self.assignment()
             elif next_token and next_token[0] == 'OPERATOR':
                 return self.increment_statement()
+                
             else:
                 self.pos += 1  # Move to the next token
                 return self.general_statement()
@@ -115,7 +116,7 @@ class sclplParser:
         
         body=[]
         while self.current_token() and (
-            self.current_token[0] != 'BRACE_OR_PAREN'
+            self.current_token()[0] != 'BRACE_OR_PAREN'
             or self.current_token()[1] != '}'
         ):
             body.append(self.general_statement())
@@ -185,6 +186,14 @@ class sclplParser:
     def increment_statement(self):
         var_token = self.eat('IDENTIFIER')
         operator = self.eat('OPERATOR')
+        if operator[1] == '+=' or operator[1] == '-=':
+            digit = self.eat('DIGIT')
+            self.eat('TERMINAL')
+            return {
+                'operation': operator[1],
+                'variable': var_token[1],
+                'DIGIT' :digit[1]
+            }
         self.eat('TERMINAL')
         return {
             'operation': operator[1],
