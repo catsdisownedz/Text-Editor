@@ -14,7 +14,7 @@ class sclplParser:
         token = self.current_token()
         if not token or token[0] != token_type:
             raise SyntaxError(f"Expected {token_type}, but got {token[0] if token else 'EOF'}")
-        #print(f"Eating token: {token}")  # Debugging print
+        print(f"Eating token: {token}")  # Debugging print
         self.pos += 1
         return token
 
@@ -33,6 +33,8 @@ class sclplParser:
             # Check for a while loop
             elif token[0] == 'KEYWORDS' and token[1] == 'while':
                 statements.append(self.parse_while_loop())
+            elif token[0] == 'KEYWORDS' and token[1] == 'for':
+                statements.append(self.parse_for_loop())
             else:
                 statements.append(self.general_statement())
         return statements
@@ -94,6 +96,44 @@ class sclplParser:
             },
             'body': body
         }
+        
+    def parse_for_loop(self):
+        self.eat('KEYWORDS')
+        self.eat('BRACE_OR_PAREN')
+        
+        initialization = self.general_statement()
+
+        condition_left = self.term()
+        operator = self.eat('CONDITIONAL_OPERATOR')
+        condition_right = self.term()
+        self.eat('TERMINAL')
+        increment=self.for_loop_increment()
+        
+          
+        self.eat('BRACE_OR_PAREN')
+        self.eat('BRACE_OR_PAREN')
+        
+        body=[]
+        while self.current_token() and (
+            self.current_token[0] != 'BRACE_OR_PAREN'
+            or self.current_token()[1] != '}'
+        ):
+            body.append(self.general_statement())
+        self.eat('BRACE_OR_PAREN')
+        
+        return{
+            'type':'for',
+            'initialization': initialization,
+            'condition':{
+                'left': condition_left,
+                'operator': operator[1],
+                'right':condition_right
+            },
+            'increment': increment,
+            'body':body
+            
+        }
+        
 
     def declaration(self):
         type_token = self.eat('TYPE')  # Type token ('int', 'char', etc.)
@@ -150,7 +190,15 @@ class sclplParser:
             'operation': operator[1],
             'variable': var_token[1]
         }
-
+    def for_loop_increment(self):
+        var_token = self.eat('IDENTIFIER')
+        operator_one = self.eat('OPERATOR')
+        ##operator_two = self.eat('OPERATOR')
+        return {
+            'operation': operator_one[1],
+            'variable': var_token[1]
+        }
+# i + + 
 
 # Main Entry Point for Testing
 if __name__ == '__main__':

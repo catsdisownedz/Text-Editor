@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import simpledialog
 import os
 import sys
+from SCLPL.sclpl_lexer import sclplLexer
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(parent_dir)
@@ -12,39 +13,41 @@ from themes import DARK_THEME
 class SyntaxHighlighter:
     def __init__(self, text_widget):
         self.text_widget = text_widget
+        self.configure_tags()
 
-        # Define syntax patterns
-        # This pattern matches both double- and single-quoted strings:
-        # ".*?" or '.*?'
-        self.patterns = {
-            "keyword":  r"\b(int|while|for|array)\b",
-            "number":   r"\b\d+\b",
-            "string": r"(\".*?\"|\'.*?\')",
-            "comment":  r"#.*",
-            "operator": r"[+\-*/=]"
-        }
-
-        self.setup_tags()
-
-    def setup_tags(self):
-        # Configure tags for different syntax elements using DARK_THEME
-        self.text_widget.tag_configure("keyword",  foreground=DARK_THEME["keyword_color"])
-        self.text_widget.tag_configure("number",   foreground=DARK_THEME["number_color"])
-        self.text_widget.tag_configure("string",   foreground=DARK_THEME["string_color"])
-        self.text_widget.tag_configure("comment",  foreground=DARK_THEME["comment_color"])
-        self.text_widget.tag_configure("operator", foreground=DARK_THEME["operator_color"])
+    def configure_tags(self):
+        for tag in self.text_widget.tag_names():
+            self.text_widget.tag_delete(tag)
 
     def highlight(self):
-        # Remove existing tags
-        for token_type in self.patterns.keys():
-            self.text_widget.tag_remove(token_type, "1.0", "end")
-
+        self.text_widget.tag_remove("Token", "1.0", "end")
         content = self.text_widget.get("1.0", "end-1c")
+        tokens = sclplLexer(content)
 
-        # Apply tags based on regex matches
-        for token_type, pattern in self.patterns.items():
-            for match in re.finditer(pattern, content, flags=re.DOTALL):
-                start, end = match.span()
-                start_index = self.text_widget.index(f"1.0+{start}c")
-                end_index   = self.text_widget.index(f"1.0+{end}c")
-                self.text_widget.tag_add(token_type, start_index, end_index)
+        index = "1.0"
+        for ttype, tvalue in tokens:
+            start_pos = self.text_widget.search(re.escape(tvalue), index, "end", regexp=True)
+            if not start_pos:
+                continue
+            end_pos = f"{start_pos}+{len(tvalue)}c"
+
+            color = self.get_token_color(ttype, tvalue)
+
+            tag_name = f"token_{start_pos}_{end_pos}"
+            self.text_widget.tag_add(tag_name, start_pos, end_pos)
+            self.text_widget.tag_configure(tag_name, foreground=color)
+            index = end_pos
+
+    def get_token_color(self, ttype, tvalue):
+        if ttype == 'KEYWORDS':
+            pastel_keywords = DARK_THEME["pastel_keyword_colors"]
+            if tvalue in pastel_keywords:
+                return pastel_keywords[tvalue]
+            else:
+                return DARK_THEME["keyword_color"]
+        elif ttype == 'BRACE_OR_PAREN':
+            bracket_colors = DARK_THEME["bracket_colors"]
+            return bracket_colors.get(tvalue, DARK_THEME["foreground"])
+        else:
+            token_colors = DARK_THEME["token_colors"]
+            return token_colors.get(ttype, DARK_THEME["foreground"])

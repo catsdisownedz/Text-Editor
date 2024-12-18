@@ -54,7 +54,7 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "python.pythonPath": "C:\\Program Files\\Python313\\python.exe",
-  "workbench.colorTheme": "SynthWave '84",
+  "workbench.colorTheme": "Bearded Theme Aquarelle Lilac",
   "cSpell.words": [
     "BAYZA",
     "graphviz",
@@ -68,6 +68,7 @@
     "SCLPL",
     "tearoff",
     "tkinter",
-    "ttkthemes"
+    "ttkthemes",
+    "zeina"
   ]
 }

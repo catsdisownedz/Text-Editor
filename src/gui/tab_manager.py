@@ -1,3 +1,4 @@
+from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
@@ -10,6 +11,7 @@ sys.path.append(parent_dir)
 from themes import DARK_THEME
 from status_bar import StatusBar
 from SCLPL.abstract_syntax_tree import AST
+from SCLPL.sclpl_lexer import sclplLexer
 from SCLPL.sclpl_parser import sclplParser
 from syntax_highlighter import SyntaxHighlighter
 
@@ -85,10 +87,14 @@ class TabManager:
         
 
     def detect_language(self, content):
-        #this is just a placeholder for the actual langauge recognition lol 
-        #it will call the actual function from sclpl_parser/language_recognition.py  ////////////////      
-        sclpl_keywords = ["int", "while", "for", "array"]
-        return any(keyword in content for keyword in sclpl_keywords)
+        tokens = sclplLexer(content)
+        sclpl_token_types = {'KEYWORDS', 'TYPE', 'OPERATOR', 'CONDITIONAL_OPERATOR', 'ASSIGNMENT_OPERATOR', 'DIGIT', 'BRACE_OR_PAREN'}
+
+        for ttype, _ in tokens:
+            if ttype in sclpl_token_types:
+                return True
+        return False
+
     
     def add_play_button(self, frame):
         if not hasattr(frame, "play_button"):
@@ -118,19 +124,21 @@ class TabManager:
             if text_widget:
                 print("second if condition!")
                 content = text_widget.get("1.0", "end-1c")
+                tokens = sclplLexer(content)
+                
 
                 # 1. Parse the content using the Parser class
                 parser = sclplParser(tokens)
-                tokens = parser.parse()  # Assuming `Parser.parse()` returns tokens or an AST
-                print(json.dumps(tokens, indent=4))
+                ast = parser.parse()  # Assuming `Parser.parse()` returns tokens or an AST
+                print(json.dumps(ast, indent=4))
 
                 # 2. Generate AST (ASCII tree) using the abstract_syntax_tree module
-                ast = AST(tokens)
-                ast_representation = ast.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
+                visualizer = AST(ast)
+                image_path = ast.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
 
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"
-                self.add_uneditable_tab(new_tab_title, ast_representation)
+                self.add_uneditable_tab(new_tab_title, image_path)
 
         print("works")
 
@@ -199,16 +207,25 @@ class TabManager:
         return None
 
 
-    def add_uneditable_tab(self,title,content):
+    def add_uneditable_tab(self, title, image_path):
         frame = tk.Frame(self.notebook, bg=DARK_THEME["editor_background"])
         frame.pack(expand=True, fill="both")
 
-        text_widget = tk.Text(frame, wrap="word", bg=DARK_THEME["editor_background"], fg=DARK_THEME["foreground"],
-                              insertbackground=DARK_THEME["cursor_color"], state="disabled")
-        text_widget.insert("1.0", content)
-        text_widget.pack(expand=True, fill="both", padx=5, pady=5)
+        label = tk.Label(frame, bg=DARK_THEME["editor_background"])
+        label.pack(expand=True, fill="both", padx=5, pady=5)
 
+        try:
+            image = Image.open(image_path) 
+            image.thumbnail((600, 600))  
+            photo = ImageTk.PhotoImage(image)  
+            label.config(image=photo)
+            label.image = photo 
+
+        except Exception as e:
+            print(f"Error loading image: {e}")
+            label.config(text="Failed to load AST image")
         self.notebook.add(frame, text=title)
+        self.notebook.select(frame)
 
     def update_status(self):
         current_tab = self.notebook.select()
