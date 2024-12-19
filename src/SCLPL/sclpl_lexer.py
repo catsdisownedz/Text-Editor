@@ -4,7 +4,8 @@ import re
 
 # Defining the tokens
 TOKEN_TYPES = [
-    ('MULTI_LINE_COMMENT', r'/\*.*?\*/'),  # Handle multi-line comments
+    ('MULTI_LINE_COMMENT', r'/\*[\s\S]*?\*/'), 
+    ('COMMENT', r'//[^\n]*'),                          
     ('KEYWORDS', r'\b(if|while|for)(?=\s|\(|$)\b'),
     ('TYPE', r'\b(int|char|string|array)\b'),
     ('OPERATOR', r'\+\+|--|\*\*|//|\+=|-=|/=|%=|\+|-|\*|/|%'),
@@ -16,7 +17,6 @@ TOKEN_TYPES = [
     ('DIGIT', r'\d+'),
     ('ARRAY_ACCESS', r'[a-zA-Z_][a-zA-Z_0-9]*\[\d+\]'),
     ('WHITESPACE', r'\s+'),
-    ('COMMENT', r'//.*?$')
 ]
 
 # Combine the patterns into one
@@ -33,15 +33,16 @@ def sclplLexer(source_code):
 
         if kind == 'WHITESPACE':
             continue  # Skip whitespace
-        elif kind == 'MULTI_LINE_COMMENT':
-            tokens.append(('MULTI_LINE_COMMENT', value.strip()))  # Add multi-line comment
+        elif kind in ['COMMENT','MULTI_LINE_COMMENT']:
+            tokens.append((kind, value))  # Add multi-line comment
         else:
-            tokens.append((kind, value.strip()))  # Add other tokens
+            tokens.append((kind, value))  # Add other tokens
     
     return tokens
 
 if __name__ == '__main__':
     code = """
+    // This is a single-line comment
     int x = 2;
     int y = 300;
     while(x <= y){

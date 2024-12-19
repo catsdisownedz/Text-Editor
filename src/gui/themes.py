@@ -44,7 +44,7 @@ DARK_THEME = {
         "DIGIT": "#FFA500",
         "ASSIGNMENT_OPERATOR": "#00c8ff",
         "COMMENT": "#ff9cdc",
-        "MULTI_LINE_COMMENT": "#ff9cdc",
+        "MULTI_LINE_COMMENT": "#add8e6",
         "STRING": "#d292fc",
         "IDENTIFIER": "#FFFFFF",
         "TERMINAL": "#FFFFFF"

@@ -14,6 +14,8 @@ from SCLPL.abstract_syntax_tree import AST
 from SCLPL.sclpl_lexer import sclplLexer
 from SCLPL.sclpl_parser import sclplParser
 from syntax_highlighter import SyntaxHighlighter
+from PIL import Image, ImageTk
+from PIL.Image import Resampling
 
 class TabManager:
     def __init__(self, root, status_bar):
@@ -215,17 +217,30 @@ class TabManager:
         label.pack(expand=True, fill="both", padx=5, pady=5)
 
         try:
-            image = Image.open(image_path) 
-            image.thumbnail((600, 600))  
-            photo = ImageTk.PhotoImage(image)  
-            label.config(image=photo)
-            label.image = photo 
+            original_image = Image.open(image_path)
+
+            def resize_image(event):
+                new_width = event.width - 20
+                new_height = event.height - 20
+                original_width, original_height = original_image.size
+                aspect_ratio = original_width / original_height
+                if (new_width / new_height) > aspect_ratio:
+                    new_width = int(new_height * aspect_ratio)
+                else:
+                    new_height = int(new_width / aspect_ratio)
+                resized = original_image.resize((new_width, new_height), Resampling.LANCZOS)
+                photo = ImageTk.PhotoImage(resized)
+                label.config(image=photo)
+                label.image = photo  
+            frame.bind("<Configure>", resize_image)
 
         except Exception as e:
             print(f"Error loading image: {e}")
             label.config(text="Failed to load AST image")
+
         self.notebook.add(frame, text=title)
         self.notebook.select(frame)
+
 
     def update_status(self):
         current_tab = self.notebook.select()

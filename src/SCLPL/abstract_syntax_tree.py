@@ -37,5 +37,5 @@ class AST:
                     add_nodes(item, item_id)
                     
         add_nodes(self.ast)
-        
-        dot.render(filename, format='png', cleanup=True)
+        image_path = dot.render(filename, format='png', cleanup=True)
+        return image_path 

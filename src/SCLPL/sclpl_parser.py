@@ -24,10 +24,9 @@ class sclplParser:
             token = self.current_token()
             if token[0] == 'MULTI_LINE_COMMENT':  # Handle multi-line comments
                 statements.append(self.multi_line_comment())
-                self.pos += 1
                 continue  # Skip to the next token
-            elif token[0] in ['SINGLELINE_COMMENT', 'MULTILINE_COMMENT']:
-                self.pos += 1
+            elif token[0] == 'COMMENT':
+                statements.append(self.single_line_comment())
                 continue  # Skip comments
 
             # Check for a while loop
@@ -43,6 +42,13 @@ class sclplParser:
         comment_token = self.eat('MULTI_LINE_COMMENT')
         return {
             'type': 'multi_line_comment',
+            'content': comment_token[1]
+        }
+    def single_line_comment(self):
+        comment_token=self.eat('COMMENT')
+        
+        return{
+            'type': 'COMMENT',
             'content': comment_token[1]
         }
 
