@@ -37,7 +37,7 @@ Build a fully functional and visually pleasing desktop application using Python.
 #### 🛠️ Tech Stack
 `Python:` The core language powering our editor.
 
-`PyQt:` For the GUI, enabling a modern and clean interface.
+`Tkinter:` For the GUI, enabling a modern and clean interface.
 
 `Custom Lexer & Parser:` Built from scratch for SCLPL, plus support for other languages using tools like guesslang.
 
