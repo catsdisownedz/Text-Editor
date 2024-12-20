@@ -1,25 +1,32 @@
+"""
+This module defines the `SyntaxHighlighter` class for applying syntax highlighting to a text widget
+based on the tokens identified by the `sclplLexer`.
+"""
+from themes import DARK_THEME
 import re
-import tkinter as tk
-from tkinter import ttk
-from tkinter import simpledialog
 import os
 import sys
 from SCLPL.sclpl_lexer import sclplLexer
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
 sys.path.append(parent_dir)
-from themes import DARK_THEME
 
 class SyntaxHighlighter:
+    """
+    A class that handles syntax highlighting for a given text widget based on tokens from the `sclplLexer`.
+    """
     def __init__(self, text_widget):
+        """Initializes the `SyntaxHighlighter` with a text widget."""
         self.text_widget = text_widget
         self.configure_tags()
 
     def configure_tags(self):
+        """Configures the tags for the text widget, removing any existing tags."""
         for tag in self.text_widget.tag_names():
             self.text_widget.tag_delete(tag)
 
     def highlight(self):
+        """Highlights the syntax in the text widget based on the tokens from the lexer."""
         self.text_widget.tag_remove("Token", "1.0", "end")
         content = self.text_widget.get("1.0", "end-1c")
         tokens = sclplLexer(content)
@@ -39,6 +46,7 @@ class SyntaxHighlighter:
             index = end_pos
 
     def get_token_color(self, ttype, tvalue):
+        """Returns the color for a given token type and value."""
         if ttype == 'KEYWORDS':
             pastel_keywords = DARK_THEME["pastel_keyword_colors"]
             if tvalue in pastel_keywords:
@@ -51,3 +59,4 @@ class SyntaxHighlighter:
         else:
             token_colors = DARK_THEME["token_colors"]
             return token_colors.get(ttype, DARK_THEME["foreground"])
+        

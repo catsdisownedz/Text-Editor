@@ -6,30 +6,25 @@ class sclplParser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
-
     def current_token(self):
         return self.tokens[self.pos] if self.pos < len(self.tokens) else None
-
     def eat(self, token_type):
         token = self.current_token()
         if not token or token[0] != token_type:
             raise SyntaxError(f"Expected {token_type}, but got {token[0] if token else 'EOF'}")
-        print(f"Eating token: {token}")  # Debugging print
+        print(f"Eating token: {token}")
         self.pos += 1
         return token
-
     def parse(self):
         statements = []
         while self.current_token():
             token = self.current_token()
-            if token[0] == 'MULTI_LINE_COMMENT':  # Handle multi-line comments
+            if token[0] == 'MULTI_LINE_COMMENT':
                 statements.append(self.multi_line_comment())
-                continue  # Skip to the next token
+                continue
             elif token[0] == 'COMMENT':
                 statements.append(self.single_line_comment())
-                continue  # Skip comments
-
-            # Check for a while loop
+                continue
             elif token[0] == 'KEYWORDS' and token[1] == 'while':
                 statements.append(self.parse_while_loop())
             elif token[0] == 'KEYWORDS' and token[1] == 'for':
@@ -37,7 +32,6 @@ class sclplParser:
             else:
                 statements.append(self.general_statement())
         return statements
-
     def multi_line_comment(self):
         comment_token = self.eat('MULTI_LINE_COMMENT')
         return {
@@ -46,54 +40,46 @@ class sclplParser:
         }
     def single_line_comment(self):
         comment_token=self.eat('COMMENT')
-        
         return{
             'type': 'COMMENT',
             'content': comment_token[1]
         }
-
     def general_statement(self):
         token = self.current_token()
-        print(f"Parsing token: {token}")  # Debugging print
-        
-        if token[0] == 'TYPE':  # Declaration statement
+        print(f"Parsing token: {token}")
+        if token[0] == 'TYPE':
             return self.declaration()
-        elif token[0] == 'IDENTIFIER':  # Identifier
+        elif token[0] == 'IDENTIFIER':
             next_token = self.tokens[self.pos + 1] if self.pos + 1 < len(self.tokens) else None
             if next_token and next_token[0] == 'ASSIGNMENT_OPERATOR':
                 return self.assignment()
             elif next_token and next_token[0] == 'OPERATOR':
                 return self.increment_statement()
-                
             else:
-                self.pos += 1  # Move to the next token
+                self.pos += 1
                 return self.general_statement()
         else:
             raise SyntaxError(f"Unrecognized statement: {token}")
 
     def parse_while_loop(self):
-        # Start parsing a while loop
-        self.eat('KEYWORDS')  # Eat 'while'
-        self.eat('BRACE_OR_PAREN')  # Eat '('
+        self.eat('KEYWORDS')
+        self.eat('BRACE_OR_PAREN')
 
-        # Parse the condition: left operand, operator, and right operand
-        condition_left = self.term()  # Left side of the condition (e.g., 'x')
-        operator = self.eat('CONDITIONAL_OPERATOR')  # The conditional operator (e.g., '<=')
-        condition_right = self.term()  # Right side of the condition (e.g., 'y')
+        condition_left = self.term()
+        operator = self.eat('CONDITIONAL_OPERATOR')
+        condition_right = self.term()
 
-        self.eat('BRACE_OR_PAREN')  # Eat ')'
-        self.eat('BRACE_OR_PAREN')  # Eat '{' (start of body)
+        self.eat('BRACE_OR_PAREN')
+        self.eat('BRACE_OR_PAREN')
 
-        # Parse the body of the loop
+
         body = []
         while self.current_token() and (
             self.current_token()[0] != 'BRACE_OR_PAREN'
             or self.current_token()[1] != '}'
         ):
             body.append(self.general_statement())
-
-        self.eat('BRACE_OR_PAREN')  # Eat '}' (end of body)
-
+        self.eat('BRACE_OR_PAREN')
         return {
             'type': 'while',
             'condition': {
@@ -143,25 +129,25 @@ class sclplParser:
         
 
     def declaration(self):
-        type_token = self.eat('TYPE')  # Type token ('int', 'char', etc.)
-        var_token = self.eat('IDENTIFIER')  # Variable name token
+        type_token = self.eat('TYPE')
+        var_token = self.eat('IDENTIFIER')
 
         assignment = None
         if self.current_token() and self.current_token()[0] == 'ASSIGNMENT_OPERATOR':
             self.eat('ASSIGNMENT_OPERATOR')
-            assignment = self.expression()  # Handle expressions like x + y
+            assignment = self.expression()
 
-        self.eat('TERMINAL')  # Eat the terminal ';'
+        self.eat('TERMINAL')
         return {
-            'type': type_token[1],
+            'type': 'int',
             'variable': var_token[1],
             'assignment': assignment
         }
 
     def assignment(self):
-        var_token = self.eat('IDENTIFIER')  # Eat the variable name
+        var_token = self.eat('IDENTIFIER')
         self.eat('ASSIGNMENT_OPERATOR')
-        value = self.expression()  # Handle assignment value
+        value = self.expression()
         self.eat('TERMINAL')
         return {
             'type': 'assignment',
@@ -170,12 +156,11 @@ class sclplParser:
         }
 
     def expression(self):
-        # This handles expressions, which might include operators like '+' between terms
-        left = self.term()  # First term in the expression
+        left = self.term()
         while self.current_token() and self.current_token()[0] == 'OPERATOR':
-            operator = self.eat('OPERATOR')  # Eat the operator
-            right = self.term()  # Next term in the expression
-            left = {'left': left, 'operator': operator[1], 'right': right}  # Combine terms
+            operator = self.eat('OPERATOR')
+            right = self.term()
+            left = {'left': left, 'operator': operator[1], 'right': right}
         return left
 
     def term(self):
@@ -208,14 +193,12 @@ class sclplParser:
     def for_loop_increment(self):
         var_token = self.eat('IDENTIFIER')
         operator_one = self.eat('OPERATOR')
-        ##operator_two = self.eat('OPERATOR')
         return {
             'operation': operator_one[1],
             'variable': var_token[1]
         }
-# i + + 
 
-# Main Entry Point for Testing
+
 if __name__ == '__main__':
     source_code = """
     int x = 2;
@@ -242,3 +225,4 @@ if __name__ == '__main__':
     # Draw the AST and save it to a file
     visualizer = AST(ast)
     visualizer.draw_ast('ast')
+    

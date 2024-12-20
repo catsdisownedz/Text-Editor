@@ -37,7 +37,7 @@ Assignment:
 Type: 
 'int'
 | 'char'
-| 'string' // BAYZA
+| 'string'
 | 'array'
 
 
@@ -107,9 +107,6 @@ MultiplicativeOperator:
 
 
 
-// ** means ^2 and // means sqrt()
-// our language our rules 
-// it was 2 am sorry
 SimpleAssignmentOperator:
     '++'
     '--'

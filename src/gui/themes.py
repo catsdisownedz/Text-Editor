@@ -1,3 +1,4 @@
+"""colors for the darktheme"""
 DARK_THEME = {
     "background": "#121212",
     "foreground": "#FFFFFF",
@@ -16,7 +17,6 @@ DARK_THEME = {
     "comment_color": "#ff9cdc",   # Pastel pink
     "operator_color": "#00c8ff",  # Cyan
 
-    # Pastel keyword colors mapped by keyword
     "pastel_keyword_colors": {
         'int': '#ffd1dc',    # pastel pink
         'while': '#b19cd9',  # pastel purple
@@ -24,7 +24,6 @@ DARK_THEME = {
         'array': '#77dd77',  # pastel green
     },
 
-    # Bracket colors
     "bracket_colors": {
         '(': '#FF00FF',   # fuchsia
         ')': '#FF00FF',
@@ -36,7 +35,6 @@ DARK_THEME = {
         '>': '#FF1493',
     },
 
-    # Token colors for other token types
     "token_colors": {
         "TYPE": "#34a834",
         "OPERATOR": "#00c8ff",

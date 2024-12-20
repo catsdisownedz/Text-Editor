@@ -24,7 +24,7 @@ class TabManager:
         self.notebook = ttk.Notebook(root)
         self.notebook.pack(expand=True, fill="both")
         self.language = "Text"
-        self.tabs = {}  # Dictionary to store tabs and their Text widgets
+        self.tabs = {}
         self.file_paths = {}
                 
         self.bracket_pairs = {
@@ -39,30 +39,24 @@ class TabManager:
         
         self.add_tab("Untitled")
 
-        # Bind <Double-1> for renaming tabs
         self.notebook.bind("<Double-1>", self.rename_tab)
 
 
     def add_tab(self, title="Untitled", content=None, file_path=None):
-        # Create a new frame for the tab
         frame = tk.Frame(self.notebook, bg=DARK_THEME["editor_background"])
         frame.pack(expand=True, fill="both")
 
-        # Add a Text widget to the frame
         text_widget = tk.Text(frame, wrap="word", bg=DARK_THEME["editor_background"], fg=DARK_THEME["foreground"],
                               insertbackground=DARK_THEME["cursor_color"], undo=True)
         text_widget.pack(expand=True, fill="both", padx=5, pady=5)
 
-        # If content is provided, insert it into the Text widget
         if content:
             text_widget.insert("1.0", content)
             
         
         text_widget.bind("<KeyRelease>", lambda e: self.update_status())
-        
         text_widget.bind("<KeyPress>", self.handle_bracket)
         
-        # Add the frame to the notebook
         self.notebook.add(frame, text=title)
         self.tabs[title] = text_widget
         self.file_paths[title] = file_path
@@ -119,7 +113,6 @@ class TabManager:
             print(f"tab dict: {self.tabs}")
             print(f"tab name: {tab_name}")
 
-            # Ensure the text widget is retrieved outside the condition
             text_widget = self.tabs.get(tab_name)
             print(f"text widget name: {text_widget}")
 
@@ -136,7 +129,7 @@ class TabManager:
 
                 # 2. Generate AST (ASCII tree) using the abstract_syntax_tree module
                 visualizer = AST(ast)
-                image_path = visualizer.draw_ast('yay')  # `draw_ast` returns the ASCII representation of the AST
+                image_path = visualizer.draw_ast('AST')
 
                 # 3. Create a new tab to display the AST
                 new_tab_title = f"{tab_name}_AST.sclpl"
@@ -248,7 +241,6 @@ class TabManager:
             tab_name = self.notebook.tab(current_tab, "text")
             text_widget = self.tabs.get(tab_name)
             if text_widget:
-                # Calculate the number of lines
                 lines = int(text_widget.index('end-1c').split('.')[0])
                 frame = text_widget.master
                 self.detect_language_and_update_ui(frame, text_widget)
@@ -264,16 +256,13 @@ class TabManager:
             tab_name = self.notebook.tab(current_tab, "text")
             text_widget = self.tabs.get(tab_name)
 
-            # Check if this is an opening bracket and we're in SCLPL mode
             if text_widget and self.language == "SCLPL":
                 opening_bracket = event.char
                 if opening_bracket in self.bracket_pairs:
                     closing_bracket = self.bracket_pairs[opening_bracket]
-                    # Insert the pair
+
                     text_widget.insert("insert", opening_bracket + closing_bracket)
-                    # Move cursor between them
                     text_widget.mark_set("insert", "insert-1c")
 
-                    # Prevent default insertion of the character again
                     return "break"
         return None
